@@ -31,7 +31,7 @@ class Cashier(Protocol):
     def is_free(self) -> bool:
         pass
 
-    def clean_up_and_end_shift(self):
+    def clean_up_and_end_shift(self) -> None:
         pass
 
     def get_report(self) -> (list[Receipt], float):
@@ -69,7 +69,6 @@ class RandomFreeCashier(Cashier):
     def __close_receipt(self, receipt: Receipt):
         self.__closed_receipts.append(receipt)
         self.__n_closed_receipts += 1
-        print(self.__n_closed_receipts)
         if self.__n_closed_receipts == constants.SHIFT_END_THRESHOLD and self.__prompt_manager_to_end_shift():
             pass
         elif self.__n_closed_receipts == constants.REPORT_THRESHOLD and self.__prompt_manager_for_report():
@@ -87,7 +86,7 @@ class RandomFreeCashier(Cashier):
         """
         return random.random() < self.__free_cashier_probability
 
-    def clean_up_and_end_shift(self):
+    def clean_up_and_end_shift(self) -> None:
         self.__closed_receipts = []
         self.__takings = 0.0
 

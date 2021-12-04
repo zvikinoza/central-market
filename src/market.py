@@ -47,5 +47,4 @@ class RandomMarketCreator(MarketCreator):
             manager.register_cashier(cashier)
         product_creator = RandomProductCreator()
         products = [product_creator.create_product() for _ in range(n_products)]
-        print(*products, sep='\n')
         return CentralMarket(cashiers, products)
