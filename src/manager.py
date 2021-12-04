@@ -17,11 +17,33 @@ class Manager(Protocol):
         pass
 
 
-class ConsoleAskManager(Manager):
+class BasicManager(Manager):
     def __init__(self):
         self.__cashiers = []
         self.__n_shift = 0
 
+    def should_send_report(self) -> bool:
+        """
+        Always Returns True. The should send the report.
+        """
+        self.__send_report()
+        return True
+
+    def should_end_shift(self) -> bool:
+        """
+        Always Returns True. The manager should end the shift.
+        """
+        self.__n_shift += 1
+        self.__send_report()
+        if self.__n_shift >= constants.SHIFTS_PER_DAY:
+            exit(0)
+        return True
+
+    def register_cashier(self, cashier) -> None:
+        self.__cashiers.append(cashier)
+
+
+class ConsoleAskManager(BasicManager):
     def should_send_report(self) -> bool:
         print('Do you want to see the report?')
         end = input('(y/n) ') == 'y'
@@ -39,9 +61,6 @@ class ConsoleAskManager(Manager):
             print('You have ended the shift {} times. You should end the day.'.format(self.__n_shift))
             exit(0)
         return end
-
-    def register_cashier(self, cashier) -> None:
-        self.__cashiers.append(cashier)
 
     def __send_report(self):
         total_takings = 0.0

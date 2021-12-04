@@ -22,7 +22,9 @@ class Product(ABC):
 class Item(Product):
     __name: str
     __price: float
-
+    """ 
+    To have discount on single item please use Pack of Items with just one item.
+    """
     def __init__(self, name: str, price: float):
         self.__name = name
         self.__price = price
@@ -39,12 +41,15 @@ class Pack(Product):
     __price: float
     __products: list[Product]
     __discount_pct: float
-
+    """
+    Name and price are calculated according to the products in the pack.
+    Note: if two packs have discount and one is in other, both discount will be applied. 
+    """
     def __init__(self, products: list[Product], discount_pct: float):
         self.__products = products
         self.__discount_pct = discount_pct
         self.__name = ' & '.join(product.name() for product in self.__products)
-        self.__price = self.__discount_pct * sum(product.price() for product in self.__products)
+        self.__price = (1.0 - self.__discount_pct) * sum(product.price() for product in self.__products)
 
     def price(self) -> float:
         return self.__price

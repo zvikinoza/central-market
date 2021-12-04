@@ -22,12 +22,6 @@ class Cashier(Protocol):
     def __close_receipt(self, receipt: Receipt):
         pass
 
-    def __prompt_manager_for_report(self) -> bool:
-        pass
-
-    def __prompt_manager_to_end_shift(self) -> bool:
-        pass
-
     def is_free(self) -> bool:
         pass
 
@@ -38,15 +32,14 @@ class Cashier(Protocol):
         pass
 
 
-class RandomFreeCashier(Cashier):
+class BasicCashier(Cashier):
     __takings: float
     __manager: Manager
     __free_cashier_probability: float
     __closed_receipts: list[Receipt]
 
-    def __init__(self, manager: Manager, free_cashier_probability: float = constants.FREE_CASHIER_PROBABILITY):
+    def __init__(self, manager: Manager):
         self.__manager = manager
-        self.__free_cashier_probability = free_cashier_probability
         self.__closed_receipts = []
         self.__takings = 0.0
         self.__n_closed_receipts = 0
@@ -69,22 +62,13 @@ class RandomFreeCashier(Cashier):
     def __close_receipt(self, receipt: Receipt):
         self.__closed_receipts.append(receipt)
         self.__n_closed_receipts += 1
-        if self.__n_closed_receipts == constants.SHIFT_END_THRESHOLD and self.__prompt_manager_to_end_shift():
+        if self.__n_closed_receipts == constants.SHIFT_END_THRESHOLD and self.__manager.should_send_report():
             pass
-        elif self.__n_closed_receipts == constants.REPORT_THRESHOLD and self.__prompt_manager_for_report():
+        elif self.__n_closed_receipts == constants.REPORT_THRESHOLD and self.__manager.should_end_shift():
             self.__closed_receipts = []
 
-    def __prompt_manager_for_report(self) -> bool:
-        return self.__manager.should_send_report()
-
-    def __prompt_manager_to_end_shift(self) -> bool:
-        return self.__manager.should_end_shift()
-
     def is_free(self) -> bool:
-        """
-        :returns: True if the cashier is free, False otherwise
-        """
-        return random.random() < self.__free_cashier_probability
+        return True
 
     def clean_up_and_end_shift(self) -> None:
         self.__closed_receipts = []
@@ -92,3 +76,17 @@ class RandomFreeCashier(Cashier):
 
     def get_report(self) -> (list[Receipt], float):
         return list(self.__closed_receipts), self.__takings
+
+
+class RandomFreeCashier(BasicCashier):
+    __free_cashier_probability: float
+
+    def __init__(self, manager: Manager, free_cashier_probability: float = constants.FREE_CASHIER_PROBABILITY):
+        super().__init__(manager)
+        self.__free_cashier_probability = free_cashier_probability
+
+    def is_free(self) -> bool:
+        """
+        :returns: True with probability of self.__free_cashier_probability, False otherwise
+        """
+        return random.random() < self.__free_cashier_probability

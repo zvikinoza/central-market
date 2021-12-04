@@ -2,6 +2,8 @@ from src.product import Product
 
 
 class Receipt:
+    __products: list[Product]
+
     def __init__(self, products: list[Product]):
         self.__products = products
 
