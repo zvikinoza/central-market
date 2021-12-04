@@ -10,8 +10,9 @@ def test_simulation() -> None:
     client: Client = RandomClient()
     products: list[Product] = market.get_product_list()
     cashier: Cashier = market.get_free_cashier()
-    receipt: Receipt = cashier.open_receipt(client.choose_products(products))
-    cashier.process_payment(receipt, client.get_payment_method())
+    for _ in range(30):
+        receipt: Receipt = cashier.open_receipt(client.choose_products(products))
+        cashier.process_payment(receipt, client.get_payment_method())
 
 
 if __name__ == '__main__':

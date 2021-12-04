@@ -10,4 +10,7 @@ class Receipt:
         return total_price
 
     def __str__(self) -> str:
-        return '\n'.join(f'{product.name()} {product.price()}' for product in self.__products)
+        return '\n'.join(f'{str(product)}' for product in self.__products)
+
+    def __repr__(self) -> str:
+        return str(self)

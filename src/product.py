@@ -1,10 +1,56 @@
 import random
+from abc import ABC
 from typing import Protocol
 
+from src import constants
 
-class Product(Protocol):
+
+class Product(ABC):
+    def name(self) -> str:
+        pass
+
     def price(self) -> float:
         pass
+
+    def __str__(self) -> str:
+        return f'{self.name()} - {"{:.2f}".format(self.price())}'
+
+    def __repr__(self):
+        return str(self)
+
+
+class Item(Product):
+    __name: str
+    __price: float
+
+    def __init__(self, name: str, price: float):
+        self.__name = name
+        self.__price = price
+
+    def price(self) -> float:
+        return self.__price
+
+    def name(self) -> str:
+        return self.__name
+
+
+class Pack(Product):
+    __name: str
+    __price: float
+    __products: list[Product]
+    __discount_pct: float
+
+    def __init__(self, products: list[Product], discount_pct: float):
+        self.__products = products
+        self.__discount_pct = discount_pct
+        self.__name = ' & '.join(product.name() for product in self.__products)
+        self.__price = self.__discount_pct * sum(product.price() for product in self.__products)
+
+    def price(self) -> float:
+        return self.__price
+
+    def name(self) -> str:
+        return self.__name
 
 
 class ProductCreator(Protocol):
@@ -26,7 +72,7 @@ class RandomProductCreator(ProductCreator):
         return n_products, discount_pct
 
     @staticmethod
-    def __is_pack(probability: float = 0.3) -> bool:
+    def __is_pack(probability: float = constants.PRODUCT_IS_PACK_PROBABILITY) -> bool:
         return random.random() < probability
 
     @staticmethod
@@ -36,27 +82,3 @@ class RandomProductCreator(ProductCreator):
     @staticmethod
     def __random_price() -> float:
         return random.uniform(0.5, 50)
-
-
-class Item(Product):
-    def __init__(self, name: str, price: float):
-        self.__name = name
-        self.__price = price
-
-    def price(self) -> float:
-        return self.__price
-
-    def name(self) -> str:
-        return self.__name
-
-
-class Pack(Product):
-    products: list[Product]
-
-    def __init__(self, products: list[Product], discount_pct: float):
-        self.__products = products
-        self.__discount_pct = discount_pct
-
-    def price(self) -> float:
-        total_price = sum(product.price() for product in self.__products)
-        return self.__discount_pct * total_price

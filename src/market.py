@@ -1,4 +1,5 @@
 import random
+import time
 from typing import Protocol
 
 from src.cashier import Cashier, RandomFreeCashier
@@ -26,6 +27,9 @@ class CentralMarket(Market):
         for cashier in self._cashiers:
             if cashier.is_free():
                 return cashier
+        print("No free cashiers, waiting for free cashier")
+        time.sleep(2)
+        return self.get_free_cashier()
 
 
 class MarketCreator(Protocol):
