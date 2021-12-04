@@ -1,7 +1,10 @@
+from src import constants
 from src.cashier import Cashier, BasicCashier
+from src.client import Client, RandomClient
 from src.manager import BasicManager, Manager
+from src.market import RandomMarketCreator, Market
 from src.payment import CashPaymentMethod, CreditCardPaymentMethod
-from src.product import Item, Pack
+from src.product import Item, Pack, Product
 from src.receipt import Receipt
 
 
@@ -24,17 +27,6 @@ def test_cashier_reporting() -> None:
     # payment should be successful
     check, total_takings = cashier.get_report()
     print('\nReceipt: ', *check, f'Sum: {"{0:.2f}".format(total_takings)}', sep='\n')
-
-
-def test_simulation() -> None:
-    # market: Market = RandomMarketCreator().create_market()
-    # client: Client = RandomClient()
-    # products: list[Product] = market.get_product_list()
-    # cashier: Cashier = market.get_free_cashier()
-    # for _ in range(350):
-    #     receipt: Receipt = cashier.open_receipt(client.choose_products(products))
-    #     cashier.process_payment(receipt, client.get_payment_method())
-    pass
 
 
 def test_pack() -> None:
@@ -68,3 +60,16 @@ def test_cashier() -> None:
     pack1: Pack = Pack([Item("Milk", 7.0), Item("Honey", 3.0)], 0.3)
     pack2: Pack = Pack([Item("Test3", 13.0), pack1], 0.3)
     assert cashier.open_receipt([pack2]).total_price() == 14.0
+
+
+def test_simulation() -> None:
+    n_simulations = -1
+    while 1 <= n_simulations <= constants.MAX_SIMULATIONS:
+        n_simulations = int(input('Enter number of purchase simulations: '))
+    market: Market = RandomMarketCreator().create_market()
+    client: Client = RandomClient()
+    products: list[Product] = market.get_product_list()
+    cashier: Cashier = market.get_free_cashier()
+    for _ in range(n_simulations):
+        receipt: Receipt = cashier.open_receipt(client.choose_products(products))
+        cashier.process_payment(receipt, client.get_payment_method())

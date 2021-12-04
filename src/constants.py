@@ -4,4 +4,5 @@ SHIFTS_PER_DAY = 3
 FREE_CASHIER_PROBABILITY = 0.6
 PRODUCT_IS_PACK_PROBABILITY = 0.2
 NESTED_PACKS_LIMIT = 3
+MAX_SIMULATIONS = 500
 PRODUCT_NAMES = ['Coffee', 'Tea', 'Milk', 'Juice', 'Water', 'Cake', 'Cookie', 'Candy', 'Chips', 'Soda']

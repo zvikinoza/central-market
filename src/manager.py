@@ -16,11 +16,14 @@ class Manager(Protocol):
     def __send_report(self) -> None:
         pass
 
+    def end_shift(self) -> None:
+        pass
+
 
 class BasicManager(Manager):
     def __init__(self):
-        self.__cashiers = []
-        self.__n_shift = 0
+        self._cashiers = []
+        self._n_shift = 0
 
     def should_send_report(self) -> bool:
         """
@@ -33,17 +36,27 @@ class BasicManager(Manager):
         """
         Always Returns True. The manager should end the shift.
         """
-        self.__n_shift += 1
-        self.__send_report()
-        if self.__n_shift >= constants.SHIFTS_PER_DAY:
-            exit(0)
+        self.end_shift()
         return True
 
+    def end_shift(self) -> None:
+        self._n_shift += 1
+        self.__send_report()
+        if self._n_shift >= constants.SHIFTS_PER_DAY:
+            exit(0)
+
     def register_cashier(self, cashier) -> None:
-        self.__cashiers.append(cashier)
+        self._cashiers.append(cashier)
+
+    def __send_report(self) -> None:
+        pass
 
 
 class ConsoleAskManager(BasicManager):
+    """
+    Manager that asks the user if he wants to send the report or end the shift.
+    Pretty Nice Guy
+    """
     def should_send_report(self) -> bool:
         print('Do you want to see the report?')
         end = input('(y/n) ') == 'y'
@@ -55,16 +68,12 @@ class ConsoleAskManager(BasicManager):
         print('Do you want to end the shift?')
         end = input('(y/n) ') == 'y'
         if end:
-            self.__n_shift += 1
-            self.__send_report()
-        if self.__n_shift >= constants.SHIFTS_PER_DAY:
-            print('You have ended the shift {} times. You should end the day.'.format(self.__n_shift))
-            exit(0)
+            super().end_shift()
         return end
 
     def __send_report(self):
         total_takings = 0.0
-        for cashier in self.__cashiers:
+        for cashier in self._cashiers:
             receipts, takings = cashier.get_report()
             total_takings += takings
             print(*receipts, sep='\n')
