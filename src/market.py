@@ -40,11 +40,12 @@ class MarketCreator(Protocol):
 class RandomMarketCreator(MarketCreator):
     def create_market(self) -> Market:
         n_cashiers = random.randrange(1, 5)
-        n_products = random.randrange(1, 10)
+        n_products = random.randrange(5, 10)
         manager = ConsoleAskManager()
         cashiers = [RandomFreeCashier(manager) for _ in range(n_cashiers)]
         for cashier in cashiers:
             manager.register_cashier(cashier)
         product_creator = RandomProductCreator()
         products = [product_creator.create_product() for _ in range(n_products)]
+        print(*products, sep='\n')
         return CentralMarket(cashiers, products)

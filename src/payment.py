@@ -8,11 +8,11 @@ class PaymentMethod(Protocol):
 
 class CashPaymentMethod(PaymentMethod):
     def pay(self, amount) -> float:
-        print(f'Paying {"{:.2f}".format(amount)} with cash')
+        # print(f'Paying {"{:.2f}".format(amount)} with cash')
         return amount
 
 
 class CreditCardPaymentMethod(PaymentMethod):
     def pay(self, amount) -> float:
-        print(f'Paying {"{:.2f}".format(amount)} with card')
+        # print(f'Paying {"{:.2f}".format(amount)} with card')
         return amount

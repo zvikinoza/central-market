@@ -48,5 +48,5 @@ class ConsoleAskManager(Manager):
         for cashier in self.__cashiers:
             receipts, takings = cashier.get_report()
             total_takings += takings
-            print(receipts)
+            print(*receipts, sep='\n')
         print(f'Total Revenue: {"{:.2f}".format(total_takings)}')

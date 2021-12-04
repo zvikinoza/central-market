@@ -49,6 +49,7 @@ class RandomFreeCashier(Cashier):
         self.__free_cashier_probability = free_cashier_probability
         self.__closed_receipts = []
         self.__takings = 0.0
+        self.__n_closed_receipts = 0
 
     def open_receipt(self, products: list[Product]) -> Receipt:
         return Receipt(products)
@@ -67,10 +68,11 @@ class RandomFreeCashier(Cashier):
 
     def __close_receipt(self, receipt: Receipt):
         self.__closed_receipts.append(receipt)
-        n_closed_receipts = len(self.__closed_receipts)
-        if n_closed_receipts == constants.SHIFT_END_THRESHOLD and self.__prompt_manager_to_end_shift():
+        self.__n_closed_receipts += 1
+        print(self.__n_closed_receipts)
+        if self.__n_closed_receipts == constants.SHIFT_END_THRESHOLD and self.__prompt_manager_to_end_shift():
             pass
-        elif n_closed_receipts >= constants.REPORT_THRESHOLD and self.__prompt_manager_for_report():
+        elif self.__n_closed_receipts == constants.REPORT_THRESHOLD and self.__prompt_manager_for_report():
             self.__closed_receipts = []
 
     def __prompt_manager_for_report(self) -> bool:

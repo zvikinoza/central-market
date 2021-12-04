@@ -13,7 +13,7 @@ class Product(ABC):
         pass
 
     def __str__(self) -> str:
-        return f'{self.name()} - {"{:.2f}".format(self.price())}'
+        return f'name={self.name()} - price={"{:.2f}".format(self.price())}'
 
     def __repr__(self):
         return str(self)
@@ -59,10 +59,10 @@ class ProductCreator(Protocol):
 
 
 class RandomProductCreator(ProductCreator):
-    def create_product(self) -> Product:
-        if self.__is_pack():
+    def create_product(self, n_nested_packs: int = 0) -> Product:
+        if n_nested_packs < constants.NESTED_PACKS_LIMIT and self.__is_pack():
             n_products, discount_pct = self.__random_pack_info()
-            return Pack([self.create_product() for _ in range(n_products)], discount_pct)
+            return Pack([self.create_product(n_nested_packs+1) for _ in range(n_products)], discount_pct)
         return Item(self.__random_name(), self.__random_price())
 
     @staticmethod
@@ -72,12 +72,12 @@ class RandomProductCreator(ProductCreator):
         return n_products, discount_pct
 
     @staticmethod
-    def __is_pack(probability: float = constants.PRODUCT_IS_PACK_PROBABILITY) -> bool:
-        return random.random() < probability
+    def __is_pack() -> bool:
+        return random.random() < constants.PRODUCT_IS_PACK_PROBABILITY
 
     @staticmethod
     def __random_name() -> str:
-        return random.choice(['Coffee', 'Tea', 'Milk', 'Juice'])
+        return random.choice(constants.PRODUCT_NAMES)
 
     @staticmethod
     def __random_price() -> float:
